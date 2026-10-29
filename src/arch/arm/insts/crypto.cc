@@ -476,6 +476,7 @@ Crypto::sha1H(uint8_t *output, uint8_t *input)
     uint32_t X[4], Y[4];
     load2Reg(&X[0], &Y[0], output, input);
     X[0] = ror(Y[0], 2);
+    X[1] = X[2] = X[3] = 0;
     store1Reg(output, &X[0]);
 }
 
