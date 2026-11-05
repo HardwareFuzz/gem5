@@ -99,6 +99,9 @@ let {{
 
     StaticInstPtr
     decodeAdvancedSIMD(ExtMachInst machInst);
+
+    StaticInstPtr
+    decodeFloatingPointDataProcessing(ExtMachInst machInst);
     '''
 
     decoder_output = '''
@@ -340,6 +343,13 @@ let {{
     StaticInstPtr
     decodeAdvancedSIMD(ExtMachInst machInst)
     {
+        // Single/double scalar FP shares the unconditional encoding space.
+        // Other sizes retain their Advanced SIMD or unsupported paths.
+        if (bits(machInst, 31, 24) == 0xfe &&
+            bits(machInst, 11, 9) == 0x5 && !bits(machInst, 4)) {
+            return decodeFloatingPointDataProcessing(machInst);
+        }
+
         // VINS and VMOVX for FP16
         if (bits(machInst, 31, 23) == 0x1FD && bits(machInst, 21, 16) == 0x30
             && bits(machInst, 11, 8) == 0xa && bits(machInst, 6) == 1) {
