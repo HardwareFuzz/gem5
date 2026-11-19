@@ -99,9 +99,6 @@ let {{
 
     StaticInstPtr
     decodeAdvancedSIMD(ExtMachInst machInst);
-
-    StaticInstPtr
-    decodeFloatingPointDataProcessing(ExtMachInst machInst);
     '''
 
     decoder_output = '''
@@ -357,14 +354,6 @@ let {{
                 // VINS
                 return new NVins<uint16_t>(machInst, vd, vm, 0);
             }
-        }
-
-        // Scalar single/double/half FP shares the unconditional space.
-        // The overlapping FP16 moves above take precedence.  Single/double
-        // use coprocessor 10/11, half precision coprocessor 9.
-        if (bits(machInst, 31, 24) == 0xfe && !bits(machInst, 4) &&
-            bits(machInst, 11, 8) == 0x9) {
-            return decodeFloatingPointDataProcessing(machInst);
         }
 
         uint8_t bit_31_24 = bits(machInst, 31, 24);
@@ -3201,8 +3190,6 @@ let {{
                 }
                 if (size == 3) {
                     return new VselD(machInst, vd, vn, vm, cond);
-                } else if (size == 1) {
-                    return new FailUnimplemented("vsel.f16", machInst);
                 } else {
                     return new VselS(machInst, vd, vn, vm, cond);
                 }
@@ -3595,13 +3582,6 @@ let {{
                 // VINS
                 return new NVins<uint16_t>(machInst, vd, vm, 0);
             }
-        }
-
-        // Preserve the overlapping FP16 moves before scalar routing.
-        // Single/double use coprocessor 10/11, half precision coprocessor 9.
-        if (bits(machInst, 31, 24) == 0xfe && !bits(machInst, 4) &&
-            bits(machInst, 11, 8) == 0x9) {
-            return decodeFloatingPointDataProcessing(machInst);
         }
 
         const uint32_t opc1 = bits(machInst, 23, 20);

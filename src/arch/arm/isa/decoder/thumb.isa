@@ -143,7 +143,7 @@ decode BIGTHUMB {
                 0x2: decode LTOPCODE_4 {
                     0x0: decode LTCOPROC {
                         0x8, 0xc, 0xd: Thumb32NeonSIMD::thumb32NeonSIMD();
-                        0x9, 0xa, 0xb: VfpData::vfpData();
+                        0xa, 0xb: VfpData::vfpData();
                         default: WarnUnimpl::cdp(); // cdp2
                     }
                     0x1: decode LTCOPROC {
